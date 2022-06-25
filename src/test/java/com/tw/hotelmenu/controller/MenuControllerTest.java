@@ -7,14 +7,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -28,7 +30,7 @@ class MenuControllerTest {
     MockMvc mockMVC;
 
     @Test
-    void shouldThrowExceptionWnenMenuIsEmpty() throws Exception {
+    void shouldThrowExceptionWhenMenuIsEmpty() throws Exception {
         List<Item> itemsSaved = Lists.newArrayList();
         when(menuService.getAllItems()).thenReturn(itemsSaved);
 
@@ -53,18 +55,31 @@ class MenuControllerTest {
     @Test
     void shouldCreateItem() throws Exception {
         Item itemSaved = new Item("Idly", 45);
-        itemSaved.setId((1L));
-        when(menuService.createItem(any())).thenReturn(itemSaved);
+        itemSaved.setId(1L);
+        when(menuService.save(any())).thenReturn(itemSaved);
 
-        String jsonContent = "[{\"id\": \"1L\",\"name\": \"Idly\", \"price\" : 45}]";
-        mockMVC.perform(post("/menu/new")
-                        .param("id", String.valueOf(1L))
+        MockHttpServletResponse response = mockMVC.perform(post("/menu/new")
                         .param("name","Idly")
                         .param("price", String.valueOf(45)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(String.valueOf(itemSaved)));
+                .andReturn().getResponse();
 
-        verify(menuService, times(1)).createItem(any());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        verify(menuService, times(1)).save(any());
+    }
+
+    @Test
+    void shouldUpdateItem() throws Exception {
+        Item itemSaved = new Item("Idly", 45);
+        itemSaved.setId(1L);
+        when(menuService.save(any())).thenReturn(itemSaved);
+        menuService.save(itemSaved);
+
+        MockHttpServletResponse response = mockMVC.perform(put("/menu/edit/1")
+                        .param("price", String.valueOf(60)))
+                .andExpect(status().isOk()).andReturn().getResponse();
+
+        assertThat(response.getContentAsString()).isEqualTo(itemSaved.toString());
     }
 
 

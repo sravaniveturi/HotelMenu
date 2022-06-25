@@ -47,9 +47,9 @@ class MenuServiceTest {
     @Test
     void  shouldCreateAnItem(){
         Item itemSaved = new Item("Idly", 45);
-        when(menuService.createItem(any())).thenReturn(itemSaved);
+        when(menuService.save(any())).thenReturn(itemSaved);
 
-        Item itemReturned = menuService.createItem(itemSaved);
+        Item itemReturned = menuService.save(itemSaved);
 
         assertEquals(itemReturned , itemSaved);
     }

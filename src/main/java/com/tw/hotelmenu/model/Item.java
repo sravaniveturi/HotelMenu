@@ -1,16 +1,14 @@
 package com.tw.hotelmenu.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Setter
 @Getter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "menu_Items")
@@ -20,7 +18,7 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "item_name", nullable = false)
+    @Column(name = "item_name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "item_price")

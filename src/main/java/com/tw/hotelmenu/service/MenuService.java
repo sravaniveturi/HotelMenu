@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MenuService {
@@ -17,8 +18,19 @@ public class MenuService {
         return itemRepository.findAll();
     }
 
-    public Item createItem(Item item) {
+    public Item save(Item item) {
         return itemRepository.save(item);
     }
 
+    public Optional<Item> findById(Long id) {
+        return itemRepository.findById(id);
+    }
+
+
+    public Item update(Long id, double price) {
+        Item item = itemRepository.findById(id).get();
+
+        item.setPrice(price);
+        return itemRepository.save(item);
+    }
 }
