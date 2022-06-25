@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -41,6 +42,16 @@ class MenuServiceTest {
         List<Item> itemsReturned = menuService.getAllItems();
 
         assertEquals(itemsSaved, itemsReturned);
+    }
+
+    @Test
+    void  shouldCreateAnItem(){
+        Item itemSaved = new Item("Idly", 45);
+        when(menuService.createItem(any())).thenReturn(itemSaved);
+
+        Item itemReturned = menuService.createItem(itemSaved);
+
+        assertEquals(itemReturned , itemSaved);
     }
 
 }
