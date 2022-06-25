@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 class ItemTest {
 
-
     @Test
     void shouldPersistItemWhenNameIsNotNull() {
         Item idly = new Item();

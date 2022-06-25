@@ -28,19 +28,18 @@ class MenuControllerTest {
 
     @Test
     void shouldThrowExceptionWnenMenuIsEmpty() throws Exception {
-        List<Item> items = Lists.newArrayList();
-        when(menuService.getAllItems()).thenReturn(items);
+        List<Item> itemsSaved = Lists.newArrayList();
+        when(menuService.getAllItems()).thenReturn(itemsSaved);
 
         mockMVC.perform(get("/menus/index"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
-
     }
 
     @Test
     void shouldGetAllItems() throws Exception {
-        List<Item> items = Arrays.asList(new Item("Idly", 45), new Item("Chapati", 60));
-        when(menuService.getAllItems()).thenReturn(items);
+        List<Item> itemsSaved = Arrays.asList(new Item("Idly", 45), new Item("Chapati", 60));
+        when(menuService.getAllItems()).thenReturn(itemsSaved);
 
         String jsonContent = "[{\"name\": \"Idly\", \"price\" : 45}, {\"name\": \"Chapati\", \"price\" : 60}]";
         mockMVC.perform(get("/menus/index"))
