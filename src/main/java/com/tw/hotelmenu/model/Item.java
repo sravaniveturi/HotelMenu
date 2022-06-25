@@ -1,12 +1,16 @@
 package com.tw.hotelmenu.model;
 
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Data
+@Setter
+@Getter
+@NoArgsConstructor
 @Table(name = "menu_Items")
 public class Item {
 
@@ -19,6 +23,11 @@ public class Item {
 
     @Column(name = "item_price")
     private double price;
+
+    public Item(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
 
     public void setName(String name) {
         if(name.equals(null))
