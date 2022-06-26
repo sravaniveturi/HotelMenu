@@ -60,8 +60,20 @@ class MenuControllerTest {
        mockMVC.perform(post("/menu/new")
                         .param("name", "Idly")
                         .param("price", String.valueOf(45)))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andExpect(content().json(asJson(itemSaved)));
+    }
+
+    @Test
+    void cannotCreateItemWithNameAsNull() throws Exception {
+        Item itemSaved = new Item(null, 45);
+        itemSaved.setId(1L);
+        when(menuService.save(any())).thenReturn(itemSaved);
+
+        mockMVC.perform(post("/menu/new")
+                .param("price", String.valueOf(45)))
+                .andExpect(status().isBadRequest());
+
     }
 
     @Test
@@ -82,7 +94,7 @@ class MenuControllerTest {
     }
 
     @Test
-    void cannotUpDateItemWithIdNotFound() throws Exception {
+    void cannotUpdateItemWithIdNotFound() throws Exception {
 
         mockMVC.perform(put("/menu/edit/1")
                         .param("name", "Idly")

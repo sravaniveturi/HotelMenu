@@ -1,6 +1,7 @@
 package com.tw.hotelmenu.model;
 
 
+import com.tw.hotelmenu.exception.InvalidItemFieldsException;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,17 +30,22 @@ public class Item {
         this.price = price;
     }
 
-    public void setName(String name) {
-        if(name.isEmpty())
-            throw new NullPointerException("Item Name field cannot be null.");
+    public void setName(String name) throws InvalidItemFieldsException{
+        if(name == null)
+            throw new InvalidItemFieldsException();
         this.name = name;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(double price) throws  InvalidItemFieldsException{
         if(price == 0)
-            throw  new NullPointerException("Item price cannot be empty.");
+            throw  new InvalidItemFieldsException();
         this.price = price;
     }
 
+    public void updateWith(Long id, String name, double price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
 }
 

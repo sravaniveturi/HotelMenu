@@ -1,5 +1,6 @@
 package com.tw.hotelmenu.model;
 
+import com.tw.hotelmenu.exception.InvalidItemFieldsException;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -9,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ItemTest {
 
     @Test
-    void shouldPersistItemWhenNameIsNotNull() {
+    void shouldPersistItemWhenNameIsNotNull() throws InvalidItemFieldsException {
         Item idly = new Item();
 
         idly.setName("idly");
@@ -19,21 +20,19 @@ class ItemTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenNameIsNull() {
+    void shouldThrowExceptionWhenNameIsNull() throws InvalidItemFieldsException {
         Item item = new Item();
 
-        item.setPrice(65);
-
-        assertThrows(NullPointerException.class, () -> item.setName(null));
+        assertThrows(InvalidItemFieldsException.class, () -> item.setName(null));
     }
 
     @Test
-    void shouldThrowExceptionWhenPriceIsEmpty() {
+    void shouldThrowExceptionWhenPriceIsEmpty() throws InvalidItemFieldsException {
         Item sandwich = new Item();
 
         sandwich.setName("sandwich");
 
-        assertThrows(NullPointerException.class, () -> sandwich.setPrice(0));
+        assertThrows(InvalidItemFieldsException.class, () -> sandwich.setPrice(0));
     }
 
 }
