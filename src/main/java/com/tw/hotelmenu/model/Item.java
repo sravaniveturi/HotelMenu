@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Entity
 @Setter
 @Getter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "menu_Items")
@@ -30,7 +29,7 @@ public class Item {
     }
 
     public void setName(String name) {
-        if(name.equals(null))
+        if(name.isEmpty())
             throw new NullPointerException("Item Name field cannot be null.");
         this.name = name;
     }
@@ -39,6 +38,13 @@ public class Item {
         if(price == 0)
             throw  new NullPointerException("Item price cannot be empty.");
         this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Item{id=").append(id).append(",name=").append(name).append(",price=").append(price).append("}");
+        return sb.toString();
     }
 }
 

@@ -4,10 +4,11 @@ package com.tw.hotelmenu.controller;
 import com.tw.hotelmenu.model.Item;
 import com.tw.hotelmenu.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/menu")
@@ -22,19 +23,31 @@ public class MenuController {
     }
 
     @PostMapping("/new")
-    public Item createItem(@RequestParam String name, @RequestParam double price) throws Exception {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Item  addItem(@RequestParam String name, @RequestParam double price) throws Exception {
         Item item = new Item(name, price);
-        return menuService.save(item);
+        return menuService.addItem(item);
     }
 
     @PutMapping("/edit/{id}")
-    public Item updateItem(@PathVariable Long id, @RequestParam double price) throws Exception {
-        Optional<Item> itemOptional = menuService.findById(id);
-        System.out.println("optional: "+itemOptional.isPresent());
-       /* if(!itemOptional.isPresent()){
-            throw new Exception();
-        }*/
-        return menuService.update(id, price);
+    public ResponseEntity<Item> updateItem(@PathVariable Long id, @RequestParam String name, @RequestParam double price) {
+
+       return menuService.findById(id)
+               .map( oldItem-> {
+                   oldItem.setId(id);
+                   oldItem.setName(name);
+                   oldItem.setPrice(price);
+
+                   Item newItem = menuService.updateItem(oldItem);
+                   return new ResponseEntity<>(newItem, HttpStatus.OK);
+               })
+               .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+   @DeleteMapping("/remove/{id}")
+    public ResponseEntity<Item> removeItem(@PathVariable Long id){
+       menuService.delete(id);
+       return new ResponseEntity<>(HttpStatus.ACCEPTED);
+   }
 
 }

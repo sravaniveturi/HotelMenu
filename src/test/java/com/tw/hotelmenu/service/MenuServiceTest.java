@@ -45,11 +45,11 @@ class MenuServiceTest {
     }
 
     @Test
-    void  shouldCreateAnItem(){
+    void  shouldCreateAnItem() throws Exception {
         Item itemSaved = new Item("Idly", 45);
-        when(menuService.save(any())).thenReturn(itemSaved);
+        when(menuService.addItem(any())).thenReturn(itemSaved);
 
-        Item itemReturned = menuService.save(itemSaved);
+        Item itemReturned = menuService.addItem(itemSaved);
 
         assertEquals(itemReturned , itemSaved);
     }

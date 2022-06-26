@@ -7,14 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -30,16 +29,6 @@ class MenuControllerTest {
     MockMvc mockMVC;
 
     @Test
-    void shouldThrowExceptionWhenMenuIsEmpty() throws Exception {
-        List<Item> itemsSaved = Lists.newArrayList();
-        when(menuService.getAllItems()).thenReturn(itemsSaved);
-
-        mockMVC.perform(get("/menus/index"))
-                .andExpect(status().isOk())
-                .andExpect(content().json("[]"));
-    }
-
-    @Test
     void shouldGetAllItemsWhenMenuNotEmpty() throws Exception {
         List<Item> itemsSaved = Arrays.asList(new Item("Idly", 45), new Item("Chapati", 60));
         when(menuService.getAllItems()).thenReturn(itemsSaved);
@@ -53,33 +42,58 @@ class MenuControllerTest {
     }
 
     @Test
+    void shouldShowEmptyMenuWhenMenuIsEmpty() throws Exception {
+        List<Item> itemsSaved = Lists.newArrayList();
+        when(menuService.getAllItems()).thenReturn(itemsSaved);
+
+        mockMVC.perform(get("/menu/index"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
+
+    @Test
     void shouldCreateItem() throws Exception {
         Item itemSaved = new Item("Idly", 45);
         itemSaved.setId(1L);
-        when(menuService.save(any())).thenReturn(itemSaved);
+        when(menuService.addItem(any())).thenReturn(itemSaved);
 
-        MockHttpServletResponse response = mockMVC.perform(post("/menu/new")
-                        .param("name","Idly")
+        mockMVC.perform(post("/menu/new")
+                        .param("name", "Idly")
                         .param("price", String.valueOf(45)))
-                .andExpect(status().isOk())
-                .andReturn().getResponse();
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString().equals(itemSaved.toString());
 
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        verify(menuService, times(1)).save(any());
+        verify(menuService, times(1)).addItem(any());
     }
 
     @Test
     void shouldUpdateItem() throws Exception {
-        Item itemSaved = new Item("Idly", 45);
-        itemSaved.setId(1L);
-        when(menuService.save(any())).thenReturn(itemSaved);
-        menuService.save(itemSaved);
+        Item initialItem = new Item("Idly", 45);
+        initialItem.setId(1L);
+        Item updatedItem = new Item(1L, "Idly", 60);
+        when(menuService.findById(anyLong())).thenReturn(Optional.of(initialItem));
+        when(menuService.updateItem(any())).thenReturn(updatedItem);
 
-        MockHttpServletResponse response = mockMVC.perform(put("/menu/edit/1")
+
+        mockMVC.perform(put("/menu/edit/1")
+                        .param("name", "Idly")
                         .param("price", String.valueOf(60)))
-                .andExpect(status().isOk()).andReturn().getResponse();
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString().equals(updatedItem.toString());
 
-        assertThat(response.getContentAsString()).isEqualTo(itemSaved.toString());
+    }
+
+    @Test
+    void deleteItem() throws Exception {
+        Item item = new Item("Idly", 45);
+        item.setId(1L);
+        when(menuService.addItem(item)).thenReturn(item);
+        menuService.addItem(item);
+
+        mockMVC.perform(delete("/menu/remove/1"))
+                .andExpect(status().isAccepted());
+
+        assertFalse(menuService.findById(item.getId()).isPresent());
     }
 
 
