@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -47,11 +48,33 @@ class MenuServiceTest {
     @Test
     void  shouldCreateAnItem() throws Exception {
         Item itemSaved = new Item("Idly", 45);
-        when(menuService.addItem(any())).thenReturn(itemSaved);
+        when(itemRepository.save(any())).thenReturn(itemSaved);
 
         Item itemReturned = menuService.addItem(itemSaved);
 
         assertEquals(itemReturned , itemSaved);
+    }
+
+    @Test
+    void shouldUpdateItem(){
+        Item newItem = new Item("Idly", 60);
+        when(itemRepository.save(any())).thenReturn(newItem);
+
+        Item updatedItem = menuService.updateItem(newItem);
+
+        assertEquals(updatedItem, newItem);
+    }
+
+    @Test
+    void shouldDeleteItem() throws Exception {
+        Item newItem = new Item(1L,"Idly", 60);
+        when(itemRepository.save(newItem)).thenReturn(newItem);
+
+        menuService.addItem(newItem);
+        menuService.delete(newItem.getId());
+
+        assertFalse(menuService.findById(newItem.getId()).isPresent());
+
     }
 
 }
