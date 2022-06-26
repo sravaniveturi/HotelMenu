@@ -1,5 +1,6 @@
 package com.tw.hotelmenu.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tw.hotelmenu.model.Item;
 import com.tw.hotelmenu.service.MenuService;
 import org.assertj.core.util.Lists;
@@ -13,7 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -55,46 +55,66 @@ class MenuControllerTest {
     void shouldCreateItem() throws Exception {
         Item itemSaved = new Item("Idly", 45);
         itemSaved.setId(1L);
-        when(menuService.addItem(any())).thenReturn(itemSaved);
+        when(menuService.save(any())).thenReturn(itemSaved);
 
-        mockMVC.perform(post("/menu/new")
+       mockMVC.perform(post("/menu/new")
                         .param("name", "Idly")
                         .param("price", String.valueOf(45)))
                 .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString().equals(itemSaved.toString());
-
-        verify(menuService, times(1)).addItem(any());
+                .andExpect(content().json(asJson(itemSaved)));
     }
 
     @Test
-    void shouldUpdateItem() throws Exception {
+    void shouldUpdateItemPrice() throws Exception {
         Item initialItem = new Item("Idly", 45);
         initialItem.setId(1L);
         Item updatedItem = new Item(1L, "Idly", 60);
         when(menuService.findById(anyLong())).thenReturn(Optional.of(initialItem));
-        when(menuService.addItem(any())).thenReturn(updatedItem);
+        when(menuService.save(any())).thenReturn(updatedItem);
 
 
         mockMVC.perform(put("/menu/edit/1")
                         .param("name", "Idly")
                         .param("price", String.valueOf(60)))
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString().equals(updatedItem.toString());
+                .andExpect(content().json(asJson(updatedItem)));
+
+    }
+
+    @Test
+    void cannotUpDateItemWithIdNotFound() throws Exception {
+
+        mockMVC.perform(put("/menu/edit/1")
+                        .param("name", "Idly")
+                        .param("price", String.valueOf(60)))
+                .andExpect(status().isNotFound());
 
     }
 
     @Test
     void deleteItem() throws Exception {
-        Item item = new Item("Idly", 45);
-        item.setId(1L);
-        when(menuService.addItem(item)).thenReturn(item);
-        menuService.addItem(item);
+        Item item = new Item(1L,"idly",45);
+        when(menuService.findById(any())).thenReturn(Optional.of(item));
+        doNothing().when(menuService).delete(any());
 
         mockMVC.perform(delete("/menu/remove/1"))
                 .andExpect(status().isAccepted());
 
-        assertFalse(menuService.findById(item.getId()).isPresent());
     }
 
+    @Test
+    void cannotDeleteItemWithIdNotFound() throws Exception {
+        mockMVC.perform(delete("/menu/remove/1"))
+                .andExpect(status().isNotFound());
+    }
+
+
+    private static String asJson(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

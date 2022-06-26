@@ -46,32 +46,32 @@ class MenuServiceTest {
     }
 
     @Test
-    void  shouldCreateAnItem() throws Exception {
+    void  shouldCreateAnItem()  {
         Item itemSaved = new Item("Idly", 45);
         when(itemRepository.save(any())).thenReturn(itemSaved);
 
-        Item itemReturned = menuService.addItem(itemSaved);
+        Item itemReturned = menuService.save(itemSaved);
 
         assertEquals(itemReturned , itemSaved);
     }
 
     @Test
-    void shouldUpdateItem(){
+    void shouldUpdateItem() {
         Item newItem = new Item("Idly", 60);
         when(itemRepository.save(any())).thenReturn(newItem);
 
-        Item updatedItem = menuService.addItem(newItem);
+        Item updatedItem = menuService.save(newItem);
 
         assertEquals(updatedItem, newItem);
     }
 
     @Test
-    void shouldDeleteItem() throws Exception {
+    void shouldDeleteItem() {
         Item newItem = new Item("Idly", 60);
         newItem.setId(1L);
         when(itemRepository.save(newItem)).thenReturn(newItem);
 
-        menuService.addItem(newItem);
+        menuService.save(newItem);
         menuService.delete(newItem.getId());
 
         assertFalse(menuService.findById(newItem.getId()).isPresent());

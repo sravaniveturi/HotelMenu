@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Entity
 @Setter
 @Getter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "menu_Items")
@@ -40,11 +41,5 @@ public class Item {
         this.price = price;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Item{id=").append(id).append(",name=").append(name).append(",price=").append(price).append("}");
-        return sb.toString();
-    }
 }
 

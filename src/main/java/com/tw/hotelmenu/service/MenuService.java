@@ -18,7 +18,7 @@ public class MenuService {
         return itemRepository.findAll();
     }
 
-    public Item addItem(Item item) {
+    public Item save(Item item) {
         return itemRepository.save(item);
     }
 
