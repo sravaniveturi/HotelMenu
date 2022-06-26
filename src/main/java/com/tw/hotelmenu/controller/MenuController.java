@@ -24,7 +24,8 @@ public class MenuController {
 
     @PostMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)
-    public Item  addItem(@RequestParam String name, @RequestParam double price) throws Exception {
+    public Item  addItem(@RequestParam String name, @RequestParam double price) {
+
         Item item = new Item(name, price);
         return menuService.addItem(item);
     }
@@ -38,7 +39,7 @@ public class MenuController {
                    oldItem.setName(name);
                    oldItem.setPrice(price);
 
-                   Item newItem = menuService.updateItem(oldItem);
+                   Item newItem = menuService.addItem(oldItem);
                    return new ResponseEntity<>(newItem, HttpStatus.OK);
                })
                .orElseGet(() -> ResponseEntity.notFound().build());
@@ -46,6 +47,9 @@ public class MenuController {
 
    @DeleteMapping("/remove/{id}")
     public ResponseEntity<Item> removeItem(@PathVariable Long id){
+        if(!menuService.findById(id).isPresent()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
        menuService.delete(id);
        return new ResponseEntity<>(HttpStatus.ACCEPTED);
    }

@@ -60,14 +60,15 @@ class MenuServiceTest {
         Item newItem = new Item("Idly", 60);
         when(itemRepository.save(any())).thenReturn(newItem);
 
-        Item updatedItem = menuService.updateItem(newItem);
+        Item updatedItem = menuService.addItem(newItem);
 
         assertEquals(updatedItem, newItem);
     }
 
     @Test
     void shouldDeleteItem() throws Exception {
-        Item newItem = new Item(1L,"Idly", 60);
+        Item newItem = new Item("Idly", 60);
+        newItem.setId(1L);
         when(itemRepository.save(newItem)).thenReturn(newItem);
 
         menuService.addItem(newItem);

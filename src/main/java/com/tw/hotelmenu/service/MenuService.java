@@ -18,11 +18,7 @@ public class MenuService {
         return itemRepository.findAll();
     }
 
-    public Item addItem(Item item) throws Exception {
-        Optional<Item> itemOptional = findById(item.getId());
-        if(itemOptional.isPresent()){
-                throw new Exception("Item Already exists");
-        }
+    public Item addItem(Item item) {
         return itemRepository.save(item);
     }
 
@@ -34,7 +30,4 @@ public class MenuService {
         itemRepository.deleteById(id);
     }
 
-    public Item updateItem(Item oldItem) {
-        return itemRepository.save(oldItem);
-    }
 }

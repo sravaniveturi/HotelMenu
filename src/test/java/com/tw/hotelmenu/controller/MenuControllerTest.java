@@ -72,7 +72,7 @@ class MenuControllerTest {
         initialItem.setId(1L);
         Item updatedItem = new Item(1L, "Idly", 60);
         when(menuService.findById(anyLong())).thenReturn(Optional.of(initialItem));
-        when(menuService.updateItem(any())).thenReturn(updatedItem);
+        when(menuService.addItem(any())).thenReturn(updatedItem);
 
 
         mockMVC.perform(put("/menu/edit/1")
