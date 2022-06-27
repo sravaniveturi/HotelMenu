@@ -26,6 +26,10 @@ public class MenuService {
         return itemRepository.findById(id);
     }
 
+    public Optional<Item> findByName(String name) {
+        return itemRepository.findByName(name);
+    }
+
     public void delete(Long id) {
         itemRepository.deleteById(id);
     }

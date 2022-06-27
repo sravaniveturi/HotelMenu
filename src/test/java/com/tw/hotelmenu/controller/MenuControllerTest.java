@@ -73,7 +73,6 @@ class MenuControllerTest {
         mockMVC.perform(post("/menu/new")
                 .param("price", String.valueOf(45)))
                 .andExpect(status().isBadRequest());
-
     }
 
     @Test

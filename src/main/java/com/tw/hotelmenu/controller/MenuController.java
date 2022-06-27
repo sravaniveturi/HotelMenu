@@ -1,7 +1,8 @@
 package com.tw.hotelmenu.controller;
 
 
-import com.tw.hotelmenu.exception.InvalidInputException;
+import com.tw.hotelmenu.exception.InvalidItemFieldsException;
+import com.tw.hotelmenu.exception.ItemAlreadyExistsException;
 import com.tw.hotelmenu.exception.ItemNotFoundException;
 import com.tw.hotelmenu.model.Item;
 import com.tw.hotelmenu.service.MenuService;
@@ -25,9 +26,12 @@ public class MenuController {
     }
 
     @PostMapping("/new")
-    public Item  addItem(@RequestParam String name, @RequestParam double price) {
+    public Item  addItem(@RequestParam String name, @RequestParam double price) throws ItemAlreadyExistsException, InvalidItemFieldsException {
         if(name == null || price <= 0){
-            throw new InvalidInputException();
+            throw new InvalidItemFieldsException();
+        }
+        if(menuService.findByName(name).isPresent()){
+            throw new ItemAlreadyExistsException();
         }
         Item item = new Item(name, price);
         return menuService.save(item);
